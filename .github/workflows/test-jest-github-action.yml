@@ -32,7 +32,7 @@ jobs:
         run: |
           modified_codes=""
           mapfile -d ',' -t modified_files < <(printf '%s,' '${{ steps.files.outputs.all }}')
-          for file in "${modified_files[@]}"; do
+          for code in "${modified_files[@]}"; do
             if [[ $code =~ \.test\.ts ]] ; then
               modified_codes="$modified_codes $code"
             fi
