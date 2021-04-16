@@ -34,7 +34,7 @@ jobs:
           mapfile -d ',' -t modified_files < <(printf '%s,' '${{ steps.files.outputs.all }}')
           for file in "${modified_files[@]}"; do
             if [[ $code =~ \.test\.ts ]] ; then
-              modified_codes="$modified_codes $(echo $code | sed 's/\.test//')"
+              modified_codes="$modified_codes $code"
             fi
           done
           echo "$modified_codes"
