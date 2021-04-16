@@ -1,36 +1,54 @@
-# This is a basic workflow to help you get started with Actions
-
 name: test-jest-github-action
 
-# Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   test-jest-github-action:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+        with:
+          fetch-depth: 0
+      - run: |
+          git fetch --no-tags origin $GITHUB_BASE_REF
+          git checkout -t origin/$GITHUB_BASE_REF
+          git checkout ${{ github.event.pull_request.head.sha }}
+      - name: Install NPM packages
+        uses: bahmutov/npm-install@v1
+      - id: files
+        uses: jitterbit/get-changed-files@v1
+        with:
+          format: csv
+      - run: |
+          echo ${{ steps.files.outputs.all }}
+      - name: get modified codes
+        id: modified_codes
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          modified_codes=""
+          mapfile -d ',' -t modified_files < <(printf '%s,' '${{ steps.files.outputs.all }}')
+          for code in "${modified_files[@]}"; do
+            if [[ $code =~ \.test\.ts ]] ; then
+              modified_codes="$modified_codes,\"$(echo $code | sed 's/\.test//')\""
+            elif [[ $code =~ \.ts$ ]]; then
+              modified_codes="$modified_codes,\"$code\""
+            fi
+          done
+          modified_codes=$(echo $modified_codes | cut -c2-)
+
+          echo "$modified_codes"
+          echo ::set-output name=codes::"$modified_codes"
+      - run: |
+          echo ${{ steps.modified_codes.outputs.codes }}
+      - name: Run Tests
+        run: yarn test --coverage --json --outputFile=/home/runner/work/test-jest-github-action/test-jest-github-action/jest.results.json --collectCoverageFrom='[${{steps.modified_codes.outputs.codes}}]'
+      - uses: mattallty/jest-github-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          test-command: 'echo done'
