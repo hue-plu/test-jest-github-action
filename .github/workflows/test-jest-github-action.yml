@@ -39,7 +39,7 @@ jobs:
           done
           echo ::set-output name=outputs::"$modified_codes"
       - run: |
-          echo ${{ steps.modified_codes.outputs }}
+          echo ${{ toJSON(steps.modified_codes.outputs) }}
       - name: Run Tests
         run: yarn test --coverage --json --outputFile=/home/runner/work/test-jest-github-action/test-jest-github-action/jest.results.json --collectCoverageFrom='[${{steps.modified_codes.outputs}}]'
       - uses: mattallty/jest-github-action@v1.0.3
