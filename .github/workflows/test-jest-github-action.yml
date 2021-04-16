@@ -37,6 +37,7 @@ jobs:
               modified_codes="$modified_codes $(echo $code | sed 's/\.test//')"
             fi
           done
+          echo "$modified_codes"
           echo ::set-output name=codes::"$modified_codes"
       - run: |
           echo ${{ steps.modified_codes.outputs.codes }}
