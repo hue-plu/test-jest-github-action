@@ -37,6 +37,8 @@ jobs:
               modified_codes="$modified_codes,"$(echo $code | sed 's/\.test//')""
             fi
           done
+          modified_codes=$(echo $modified_codes | cut -c2-)
+
           echo "$modified_codes"
           echo ::set-output name=codes::"$modified_codes"
       - run: |
