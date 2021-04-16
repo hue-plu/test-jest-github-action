@@ -37,11 +37,11 @@ jobs:
               modified_codes="$modified_codes $(echo $code | sed 's/\.test//')"
             fi
           done
-          echo ::set-output name=outputs::"$modified_codes"
+          echo ::set-output name=codes::"$modified_codes"
       - run: |
-          echo ${{ toJSON(steps.modified_codes.outputs) }}
+          echo ${{ steps.modified_codes.outputs.codes }}
       - name: Run Tests
-        run: yarn test --coverage --json --outputFile=/home/runner/work/test-jest-github-action/test-jest-github-action/jest.results.json --collectCoverageFrom='[${{steps.modified_codes.outputs}}]'
+        run: yarn test --coverage --json --outputFile=/home/runner/work/test-jest-github-action/test-jest-github-action/jest.results.json --collectCoverageFrom='[${{steps.modified_codes.outputs.codes}}]'
       - uses: mattallty/jest-github-action@v1.0.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
