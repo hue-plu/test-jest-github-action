@@ -35,7 +35,7 @@ jobs:
           for code in "${modified_files[@]}"; do
             if [[ $code =~ \.test\.ts ]] ; then
               modified_codes="$modified_codes,\"$(echo $code | sed 's/\.test//')\""
-            elif [ $code =~ \.ts$ ]; then
+            elif [[ $code =~ \.ts$ ]]; then
               modified_codes="$modified_codes,\"$code\""
             fi
           done
