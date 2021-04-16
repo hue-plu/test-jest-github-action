@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      #   with:
-      #     fetch-depth: 0
-      # - run: |
-      #     git fetch --no-tags origin $GITHUB_BASE_REF
-      #     git checkout -t origin/$GITHUB_BASE_REF
-      #     git checkout ${{ github.event.pull_request.head.sha }}
+        with:
+          fetch-depth: 0
+      - run: |
+          git fetch --no-tags origin $GITHUB_BASE_REF
+          git checkout -t origin/$GITHUB_BASE_REF
+          git checkout ${{ github.event.pull_request.head.sha }}
       - name: Install NPM packages
         uses: bahmutov/npm-install@v1
       - name: Run Tests
