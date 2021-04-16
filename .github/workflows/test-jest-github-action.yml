@@ -21,8 +21,10 @@ jobs:
       #     git checkout ${{ github.event.pull_request.head.sha }}
       - name: Install NPM packages
         uses: bahmutov/npm-install@v1
+      - name: Run Tests
+        run: yarn test --coverage --json --changedSince=$GITHUB_BASE_REF --outputFile=/home/runner/work/test-jest-github-action/test-jest-github-action/jest.results.json
       - uses: mattallty/jest-github-action@v1.0.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          test-command: 'yarn test'
+          test-command: 'echo done'
