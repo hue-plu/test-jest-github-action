@@ -24,15 +24,24 @@ jobs:
       - id: files
         uses: jitterbit/get-changed-files@v1
         with:
-          format: space-delimited
+          format: csv
       - run: |
           echo ${{ steps.files.outputs.all }}
-      - run: |
-          for changed_file in ${{ steps.files.outputs.all }}; do
-            echo "Do something with this ${changed_file}."
+      - name: get modified codes
+        id: modified_codes
+        run: |
+          modified_codes=""
+          mapfile -d ',' -t modified_files < <(printf '%s,' '${{ steps.files.outputs.all }}')
+          for file in "${modified_files[@]}"; do
+            if [[ $code =~ \.test\.ts ]] ; then
+              modified_codes="$modified_codes $(echo $code | sed 's/\.test//')"
+            fi
           done
+          echo ::set-output name=outputs::"$modified_codes"
+      - run: |
+          echo ${{ steps.modified_codes.outputs }}
       - name: Run Tests
-        run: yarn test --coverage --json --outputFile=/home/runner/work/test-jest-github-action/test-jest-github-action/jest.results.json --collectCoverageFrom='[${{steps.files.outputs.all}}]'
+        run: yarn test --coverage --json --outputFile=/home/runner/work/test-jest-github-action/test-jest-github-action/jest.results.json --collectCoverageFrom='[${{steps.modified_codes.outputs}}]'
       - uses: mattallty/jest-github-action@v1.0.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
