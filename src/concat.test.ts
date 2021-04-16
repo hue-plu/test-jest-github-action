@@ -1,5 +1,5 @@
 import { concat } from "./concat";
 
 test("#concat", () => {
-  expect("a", "b").toBe("ab");
+  expect(concat("a", "b")).toBe("ab");
 });
